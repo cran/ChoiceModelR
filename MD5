@@ -1,0 +1,12 @@
+c6d6d8fa081a78dbfc8e8b2a4756a3e1 *DESCRIPTION
+2d4e02894f1147d857b5eaf584c6feb1 *LICENSE
+07404fcb57c0728466b92445c2827c5b *R/ChoiceModelR.R
+807ca80e10a2b53981ba17f95f604fa6 *data/datar.rda
+1606ed9788838d38f723135dbdb1d33b *data/sharedatar.rda
+1f9efb0adefaceaec5d16ab53dab206f *data/truebetas.rda
+f071149747f435f4db21f03d9f818868 *inst/doc/ChoiceModelR-manual.pdf
+ab8a33a847187a3c457dc0e39a2f8f2e *man/ChoiceModelR-package.Rd
+fe2ab412d31d6f0acc0fa8c354dd072b *man/choicemodelr.Rd
+cd4346b821a7a3abe40f6c341a63bad4 *man/datar.Rd
+719b80d527fc6ed793583101d1dc5ff4 *man/sharedatar.Rd
+03f6ef12139723ffc2c3924304dfc8b9 *man/truebetas.Rd

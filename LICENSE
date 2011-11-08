@@ -1,0 +1,41 @@
+Program Name: ChoiceModelR
+MCMC Algorithm for Hierarchical Multinomial Logit (MNL) with Normal Heterogeneity
+
+A program to analyze choice and share-of-choices data.  Predictor variables
+may be naturally occuring or, preferably, based on an experimental design 
+which optimally selects particular combinations of levels of predictor 
+variables.  Model outputs may be used to predict future scenarios or to 
+identify optimal solutions.
+
+This program builds upon the excellent work of Peter Rossi, Ph.D., 
+Anderson School, UCLA.  In particular it builds on the rhierMnlRwMixture
+program of the R Language package, bayesm, authored by Peter Rossi.
+
+Copyright (C) 2011 Decision Analyst, Inc.
+                   604 Avenue H East
+                   Arlington, Texas 76011 
+                   www.decisionanalyst.com
+                   817-640-6166
+
+Mr. Ryan Sermas (rsermas@decisionanalyst.com) is the author. He was 
+assisted by John V. Colias, Ph.D. (jcolias@decisionanalyst.com) and 
+both may be reached at Decision Analyst (817-640-6166).
+
+Decision Analyst is a strategic research and analytical consulting firm 
+located in the Dallas-Fort Worth area, at 604 Avenue H East, 
+Arlington, Texas 76011, www.decisionanalyst.com, 817-640-6166.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version. 
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, write to the Free Software Foundation, Inc.,
+59 Temple Place, Suite 330, Boston, MA 02111-1307, or see 
+http://www.gnu.org/licenses/.
