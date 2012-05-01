@@ -257,12 +257,11 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 			switch(fCount,
 				lb <- matrix(f.in, ncol = fPar, byrow = TRUE),
 				lbc <- matrix(f.in, ncol = fPar, byrow = TRUE),
-				ld <- matrix(f.in, nrow = 1)
+				ld <- c(f.in)
 			)
-			fIndex = ltr[fCount]
+			fIndex = fIndex + ltr[fCount]
 			fCount = fCount + 1
 		}
-		
 	}
 
 	if (save) {
@@ -334,8 +333,15 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 
 	getLndMvn = function (x, mu, rooti) {
 		npar = ncol(x)
-	
-		z = crossprod(t(x) - mu, rooti)
+		#
+		# WITH COVARIATES
+		#	
+		if (is.matrix(mu)) { z = (x - mu) %*% rooti }
+		#
+		# NO COVARIATES
+		#
+		else { z = crossprod(t(x) - mu, rooti) }
+
 		logs = -(npar / 2) * log(2 * pi) - 0.5 * rowSums(z * z) + sum(log(diag(rooti)))
 		
 		return(logs)
@@ -346,7 +352,7 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 		sig = tcrossprod(comps$rooti)
 
 		xtx = crossprod(x) %x% sig
-		xty = sig %*% crossprod(yy, x)
+	        xty = matrix(sig %*% crossprod(yy, x), ncol = 1)
 
 		cov = chol2inv(chol(xtx + Ad))
 
@@ -595,7 +601,7 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 		rootpi = oldcomp$rooti
 		inc.root = chol(chol2inv(chol(tcrossprod(rootpi))))
 		if (drawdelta) {
-			betabar = as.vector(t(matrix(olddelta, ncol = nz) %*% t(demos) + oldcomp$mu))
+			betabar = t(matrix(olddelta, ncol = nz) %*% t(demos) + oldcomp$mu)
 		}
 		else {
 			betabar = oldcomp$mu
@@ -685,8 +691,7 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 			ctime = proc.time()[3]
 			timetoend = ((ctime - itime) / rep) * (R + 1 - rep)
 			if (rep == 100) {
-				cat("Iteration ", "Acceptance  ", "RLH    ", "Pct. Cert.  ", 
-					"Avg. Var.  ", "RMS    ", "Time to End", fill = TRUE)
+				cat("Iteration ", "Acceptance  ", "RLH    ", "Pct. Cert.  ", "Avg. Var.  ", "RMS    ", "Time to End", fill = TRUE)
 			}
 			cat(sprintf("%9.0i  %-5.3f        %-5.3f   %-5.3f        %-5.2f       %-5.2f   %-6s",
 				rep + fR, acceptr.t / (100 * nunits), RLH.a, PctCert.a, AvgVar.a, RMS.a, 
@@ -713,9 +718,6 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 			else {
 				betaout = betaout + oldbetas
 			}
-			if (drawdelta) {
-				deltaout = deltaout + olddelta
-			}
 		}		
 	}
 	
@@ -733,6 +735,9 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 	if (constrain) {
 		write.table(oldbetas.c, "restart.txt", sep = " ", row.names = FALSE, col.names = FALSE, append = TRUE)
 	}
+	if (drawdelta) {
+		write.table(t(olddelta), "restart.txt", sep = " ", row.names = FALSE, col.names = FALSE, append = TRUE)
+	}
 		
 	#
 	#
@@ -748,9 +753,8 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 	}
 	if (none) { betanames = c(betanames, "NONE") }
 	cat("Writing estimated unit-level betas to Rbetas.csv in the working directory", fill = TRUE)
-        cat("",fill=TRUE)
-        write.table(betawrite, file = "RBetas.csv", sep = ",", col.names = betanames,
-			row.names = FALSE, qmethod = "double") 			
+      cat("", fill=TRUE)
+      write.table(betawrite, file = "RBetas.csv", sep = ",", col.names = betanames, row.names = FALSE, qmethod = "double") 			
 	
 	if (save) { 
 		switch(1 + 1 * constrain + 2 * drawdelta,

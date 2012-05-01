@@ -19,7 +19,7 @@ The first column contains the ID of the unit (e.g. customer or survey respondent
 
 If the dependent variable y is discrete, then the dependent variable takes a non-zero value only in the first row of the choice set data, and takes a value from 1 to the number of alternatives in the choice set.\cr
 
-For example, the following 2 rows of the data frame data shows 2 choice sets for unitID=103322 , 3 alternatives per choice set, 3 independent variables X1 to X3, and a dependent variable y indicating choice of alternative 2 in the first choice set and alternative 3 in the second choice set.\cr
+For example, the following 2 rows of the data frame \dQuote{data} shows 2 choice sets for unitID=103322 , 3 alternatives per choice set (note that the \dQuote{none} alternative is excluded in this example), 3 independent variables X1 to X3, and a dependent variable y indicating choice of alternative 2 in the first choice set and alternative 3 in the second choice set.\cr
 
 \tabular{ll}{
 \tab 103322  1  1  4  6  1  2\cr
@@ -116,7 +116,7 @@ For example, for a model with 3 attributes, set constraints = list(c1, c2, c3).
   \item{options}{
 A list with 5 possible arguments:  list(none, save, keep, wgt, restart).\cr
 
-\bold{none}:  set to TRUE to estimate a none parameter, and the data does not include a row for nono (i.e., no choice)  (default is FALSE).
+\bold{none}:  set to TRUE to estimate a none parameter, and the data does not include a row for \dQuote{none} (i.e., no choice)  (default is FALSE).
 
 \bold{save}:  set to TRUE to save draws of betas, deltas, mu, rooti, and the log likelihood (default is FALSE).
 
@@ -152,7 +152,7 @@ Priors:\cr
 \tab Ad \tab = prior precision matrix for deltabar = .01I\cr
 \tab mubar \tab = nvar by 1 prior mean vector for mu = vector of zeros\cr
 \tab nu \tab = nuI is the degrees of freedom parameter for IW prior for Sigma\cr
-\tab V \tab = pds location parameter for IW prior for Sigma\cr
+\tab V \tab = location parameter for IW prior for Sigma\cr
 \tab Amu \tab = prior precision for normal mean = .01}
 }
 \value{
