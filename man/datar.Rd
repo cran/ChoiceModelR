@@ -73,12 +73,12 @@ xcat = (xlast3 == xmax)*1
 X=cbind(xadd,xcat)
 
 # now construct probabilities
-Xbeta=X%*%beta
+Xbeta=X\%*\%beta
 p=nrow(Xbeta)/n
 Xbeta=matrix(Xbeta,byrow=TRUE,ncol=p)
 Prob=exp(Xbeta)
 iota=c(rep(1,p))
-denom=Prob%*%iota
+denom=Prob\%*\%iota
 Prob=Prob/as.vector(denom)
 # draw y
 y=vector("double",n)
@@ -86,7 +86,7 @@ ind=1:p
 for (i in 1:n) 
         {
         yvec=rmultinom(1,1,Prob[i,])
-        y[i]=ind%*%yvec
+        y[i]=ind\%*\%yvec
         }
 
 return(list(y=y,X=X,beta=beta,prob=Prob))
@@ -158,7 +158,7 @@ for (c in cards) {
         anum = anum + 1
         if (anum > 1) {depvar = 0}
         xx = datah[[i]]$X[(c-1)*amax+a,]
-        xa = xx[1:(length(xx)-3)]%*%c(1:(length(xx)-3))
+        xa = xx[1:(length(xx)-3)]\%*\%c(1:(length(xx)-3))
         if (sum(xa)==0) {xa = length(xx) - 2}
         xb = which.max(xx[(length(xx)-2):length(xx)])
         datar = rbind(datar,c(i,cnum,anum,xa,xb,depvar)) } } }

@@ -76,12 +76,12 @@ xcat = (xlast3 == xmax)*1
 X=cbind(xadd,xcat)
 
 # now construct probabilities
-Xbeta=X%*%beta
+Xbeta=X\%*\%beta
 p=nrow(Xbeta)/n
 Xbeta=matrix(Xbeta,byrow=T,ncol=p)
 Prob=exp(Xbeta)
 iota=c(rep(1,p))
-denom=Prob%*%iota
+denom=Prob\%*\%iota
 Prob=Prob/as.vector(denom)
 # draw y
 y=array(double(1),dim=c(n,p,l))
@@ -139,7 +139,7 @@ for (i in 1:nunits) {
         depvar = datah[[i]]$y[c,]
             for (a in 1:anum) {
             xx = datah[[i]]$X[(c-1)*anum+a,]
-            xa = xx[1:(length(xx)-3)]%*%c(1:(length(xx)-3))
+            xa = xx[1:(length(xx)-3)]\%*\%c(1:(length(xx)-3))
             if (sum(xa)==0) {xa = length(xx) - 2}
             xb = which.max(xx[(length(xx)-2):length(xx)])
             sharedatar = rbind(sharedatar,c(i,c,a,xa,xb,depvar[a])) } } }

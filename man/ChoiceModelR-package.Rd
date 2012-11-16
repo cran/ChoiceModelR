@@ -9,8 +9,8 @@ Estimates coefficients of a Hierarchical Bayes Multinomial Logit Model
 \tabular{ll}{
 Package: \tab ChoiceModelR\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2011-12-01\cr
+Version: \tab 1.2\cr
+Date: \tab 2012-11-16\cr
 License: \tab GPL (>=3)\cr
 LazyLoad: \tab yes\cr
 }
@@ -21,10 +21,10 @@ The dependent variable can be either discrete or a share.  If the dependent vari
 The basic structure of the code for this algorithm was derived from the rhierMnlRwMixture program of the bayesm package available at cran.r-project.org.  Significant modifications were made to greatly reduce the run time, to allow constraints on estimated parameters, handle varying number of choice observations, handle varying number of choice alternatives within each choice scenario, and to optionally allow the dependent variable to be a share (between 0 and 1) instead of discrete (1 ,..., nalt; where nalt is the number of alternatives in choice set).
 }
 \author{
-Ryan Sermas <DecisionAnalystR@decisionanalyst.com>, assisted by John V. Colias <DecisionAnalystR@decisionanalyst.com>
+Ryan Sermas, assisted by John V. Colias Ph.D., at Decision Analyst, Inc.
+\email{DecisionAnalystR@decisionanalyst.com}
 
-Maintainer: Ryan Sermas <DecisionAnalystR@decisionanalyst.com>
-}
+Maintainer: John V. Colias <jcolias@decisionanalyst.com>}
 \references{
 Rossi, Peter; Allenby, Greg M.; and McCulloch, Robert (2005), Bayesian Statistics and Marketing, John Wiley and Sons.
 }

@@ -29,11 +29,15 @@ For example, the following 2 rows of the data frame \dQuote{data} shows 2 choice
 
 The next example is identical to the first example, except that the dependent variable is a share, indicating 30 percent and 40 percent for alternatives 1 and 2 of choice set 1.\cr
 
+For a share dependent variable, the \dQuote{none} alternative must be explicitly included in the data.\cr
+
 \tabular{ll}{
 \tab 103322  1  1  4  6  1  0.3\cr
 \tab 103322  1  2  1  1  1  0.4\cr
+\tab 103322  1  0  0  0  0  0.3\cr
 \tab 103322  2  1  3  6  1  0.5\cr
-\tab 103322  2  2  4  8  1  0.5}
+\tab 103322  2  2  4  8  1  0.5\cr
+\tab 103322  2  0  0  0  0  0.0}
 
 }
   \item{xcoding}{
@@ -78,7 +82,7 @@ s = a scaling parameter that is used to adjust the standard deviation of random 
   \item{constraints}{
 A list of matrices containing the values 0, 1, and -1.  If specifying constraints, a constraints matrix must be specified for EVERY attribute. Simply declare a matrix of 0s for an unconstrained attribute.
 
-Each matrix must be square with dimensions equal to the number of levels of the attribute it represents.  For a continuous attribute declare a 1 x 1 matrix containing the appropriate value.  The matrices are interpreted as follows: 
+Each matrix must be square with dimensions equal to the number of levels of the attribute it represents.  For a continuous attribute declare a 1 x 1 matrix containing the appropriate value.  The matrices for categorical variables are interpreted as follows: 
 
 \itemize{
 \item c1[i, j] = 1,  beta_i > beta_j
@@ -111,6 +115,13 @@ For example, for a model with 3 attributes, set constraints = list(c1, c2, c3).
 \tab 0,0,1,1,\cr
 \tab 0,0,0,1,\cr
 \tab 0,0,0,0), ncol = 4, byrow = TRUE)}
+
+The 1 x 1 matrices for continuous variables are interpreted as follows: 
+
+\itemize{
+\item c4[1, 1] = 1,  beta > 0
+\item c4[1, 1] = -1,  beta < 0
+\item c4[1, 1] = 0,  no constraint}
 
 }
   \item{options}{
