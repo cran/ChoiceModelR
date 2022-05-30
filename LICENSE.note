@@ -17,7 +17,7 @@ Copyright (C) 2012 Decision Analyst, Inc.
                    www.decisionanalyst.com
                    817-640-6166
 
-Mr. Ryan Sermas (rsermas@decisionanalyst.com) is the author. He was 
+Mr. Ryan Sermas is the author. He was 
 assisted by John V. Colias, Ph.D. (jcolias@decisionanalyst.com) and 
 both may be reached at Decision Analyst (817-640-6166).
 
@@ -37,5 +37,5 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, write to the Free Software Foundation, Inc.,
-59 Temple Place, Suite 330, Boston, MA 02111-1307, or see 
-http://www.gnu.org/licenses/.
+59 Temple Place, Suite 330, Boston, MA 02111-1307, or see Program Name: ChoiceModelR
+MCMC Algorithm for Hierarchical Multinomial Logit (MNL) with Normal Heterogeneity.

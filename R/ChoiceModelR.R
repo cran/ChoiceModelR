@@ -1,5 +1,6 @@
+#' @export
 choicemodelr <-
-function(data, xcoding, demos, prior, mcmc, constraints, options) {
+function(data, xcoding, demos, prior, mcmc, constraints, options, directory) {
 	callStop = function(message) { stop(message, call. = FALSE) }
 
 	if (missing(data)) { callStop("data argument required") }
@@ -60,14 +61,14 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 	avgalts = mean(nalts[nalts > 0])
 	avgsets = mean(nsets)
 	nalts = colSums(nalts)
-	
+
 	info = list(nunits = nunits,
-			maxsets = maxsets,
-			maxalts = maxalts,
-			nsets = nsets,
-			nalts = nalts,
-			setsmap = setsmap,
-			altsmap = altsmap)	
+	            maxsets = maxsets,
+	            maxalts = maxalts,
+	            nsets = nsets,
+	            nalts = nalts,
+	            setsmap = setsmap,
+	            altsmap = altsmap)
 
 	if (all(data[!(data[,3] == 1), ncol(data)] == 0)) { share = FALSE }
 	else { share = TRUE }
@@ -92,11 +93,12 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 		}
 		else { Xt = data[, c(-1, -2, -3, -ncol(data)), drop = FALSE] }
 		y = data[data[,3] == 1, ncol(data)]
-		if (any(y > maxalts) | any(y < 1)) { callStop(paste("invalid values of y present in data - values must be 1 to ", 
-									    maxalts, sep = "")) }
+		if (any(y > maxalts) | any(y < 1)) {
+		  callStop(paste("invalid values of y present in data - values must be 1 to ",
+		                 maxalts, sep = "")) }
 		ytab = table(y); ytab = rbind(ytab, round(ytab / sum(ytab) * 100, 2))
 	}
-	
+
 	nlevels = c(rep(0, natts))
 	for (i in 1:natts) {
 		if (xcoding[i] == 0) {
@@ -163,8 +165,12 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 	}
 	if (is.null(prior$Ad) & drawdelta) { Ad = 0.01 * diag(npar * nz) }
 	else if (drawdelta) {
-		Ad = prior$Ad
-		if (any(dim(Ad) != c(npar * nz, npar * nz))) { callStop("Ad must be of dimensions (npar * nz) x (npar * nz)") }
+	  Ad = prior$Ad
+	  if (!'numeric' %in% class(Ad) ) {
+	    callStop("Ad must be a scalar")
+	  } else {
+	    Ad = Ad * diag(npar * nz)
+	  }
 	}
 	if (is.null(prior$deltabar) & drawdelta) { deltabar = rep(0, nz * npar) }
 	else if (drawdelta) {
@@ -224,10 +230,10 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 
 	fR = 0
 	if (restart) {
-		if (!any(list.files() == "restart.txt")) {
-			callStop("file restart.txt does not exist in the working directory")
+		if (!any(list.files(directory) == 'restart.txt')) {
+			callStop("file restart.txt does not exist in the specified directory")
 		}
-		f.in = scan("restart.txt", nlines = 1, skip = 0, quiet = TRUE)
+		f.in = scan(paste(directory,'/','restart.txt', sep = ''), nlines = 1, skip = 0, quiet = TRUE)
 		fR = f.in[1]
 		fUnits = f.in[2]
 		fPar = f.in[3]
@@ -236,29 +242,29 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 		fDem = f.in[6]
 		items = 1
 		ltr = fUnits
-		if (fCons == 1) { 
-			items = items + 1 
-			ltr = c(ltr, fUnits)	
-		} 
-		if (fDem == 1) { 
-			items = items + 1 
+		if (fCons == 1) {
+			items = items + 1
+			ltr = c(ltr, fUnits)
+		}
+		if (fDem == 1) {
+			items = items + 1
 			ltr = c(ltr, 1)
 		}
-		if (fUnits != nunits) { callStop("number of units in restart file does not match data file") }	
+		if (fUnits != nunits) { callStop("number of units in restart file does not match data file") }
 		if (fPar != npar) { callStop("number of parameters in restart file does not match data file") }
 		if (fCons != as.numeric(constrain)) { callStop("restart file and function arguments do not agree on constraints being present") }
 		if (fDem != as.numeric(drawdelta)) { callStop("restart file and function arguments do not agree on demographics being present") }
-	
+
 		fIndex = 1
 		fCount = 1
 		repeat {
 			if (fCount > items) { break }
-			f.in = scan("restart.txt", nlines = ltr[fCount], skip = fIndex, quiet = TRUE)
+			f.in = scan(paste(directory,'/','restart.txt', sep = ''), nlines = ltr[fCount], skip = fIndex, quiet = TRUE)
 			switch(fCount,
-				lb <- matrix(f.in, ncol = fPar, byrow = TRUE),
-				lbc <- matrix(f.in, ncol = fPar, byrow = TRUE),
-				ld <- c(f.in)
-			)
+			       lb <- matrix(f.in, ncol = fPar, byrow = TRUE),
+			       lbc <- matrix(f.in, ncol = fPar, byrow = TRUE),
+			       ld <- c(f.in)
+			       )
 			fIndex = fIndex + ltr[fCount]
 			fCount = fCount + 1
 		}
@@ -276,15 +282,15 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 		else { oldbetas.c = matrix(0, nrow = nunits, ncol = npar) }
 	}
 	betaout = matrix(0, nrow = nunits, ncol = npar)
-	if (drawdelta) { 
-		if (restart) { olddelta = ld } 
+	likeout = rep(0, nunits)   # new code
+	if (drawdelta) {
+		if (restart) { olddelta = ld }
 		else { olddelta = rep(0, nz * npar) }
 	}
 	if (restart) { oldbetas = lb }
 	else { oldbetas = matrix(0, nrow = nunits, ncol = npar) }
 	oldll = rep(0, nunits)
 	oldcomp = NULL
-	
 	muplot = matrix(0, nrow = R, ncol = npar + npw)
 	xplot = (1 + fR):(R + fR)
 
@@ -298,7 +304,7 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 
 		map.sets = t(info$setsmap)
 		map.alts = t(info$altsmap)
-		
+
 		tmpXbeta = X * beta[rep(1:nunits, info$nalts),]
 		tmpXbeta = rowSums(tmpXbeta)
 		Xbeta = matrix(0, nrow = nalts, ncol = sum(info$nsets))
@@ -324,7 +330,7 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 			Xbeta[map.alts] = exp(Xbeta[map.alts])
 			denom = matrix(0, nrow = nsets, ncol = nunits)
 			denom[map.sets] = log(colSums(Xbeta))
-			
+
 			ll = colSums(xby - denom)
 		}
 
@@ -335,7 +341,7 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 		npar = ncol(x)
 		#
 		# WITH COVARIATES
-		#	
+		#
 		if (is.matrix(mu)) { z = (x - mu) %*% rooti }
 		#
 		# NO COVARIATES
@@ -343,7 +349,7 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 		else { z = crossprod(t(x) - mu, rooti) }
 
 		logs = -(npar / 2) * log(2 * pi) - 0.5 * rowSums(z * z) + sum(log(diag(rooti)))
-		
+
 		return(logs)
 	}
 
@@ -352,7 +358,7 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 		sig = tcrossprod(comps$rooti)
 
 		xtx = crossprod(x) %x% sig
-	        xty = matrix(sig %*% crossprod(yy, x), ncol = 1)
+		xty = matrix(sig %*% crossprod(yy, x), ncol = 1)
 
 		cov = chol2inv(chol(xtx + Ad))
 
@@ -374,7 +380,6 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 		else {
 			newll = getLLMnl(newbeta, y, X, info)
 		}
-
 		newlpost = newll + getLndMvn(newbeta, betabar, rootpi)
 		ldiff = newlpost - oldll - getLndMvn(oldbeta, betabar, rootpi)
 
@@ -382,7 +387,7 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 		alpha[alpha > 1] = 1
 		unif = runif(nunits)
 		unif[alpha == 1] = 0
-	
+
 		good = (unif <= alpha)
 		betadraw = oldbeta
 		betadraw[good,] = newbeta[good,]
@@ -391,14 +396,14 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 			betadraw.c[good,] = newbeta.c[good,]
 		}
 		oldll[good] = newll[good]
-		
+
 		stay = sum(!good)
 
 		if (!missing(constraints)) {
 			return(list(betadraw = betadraw, betadraw.c = betadraw.c, stay = stay, oldll = oldll))
 		}
 		else {
-			return(list(betadraw = betadraw, stay = stay,  oldll = oldll))
+			return(list(betadraw = betadraw, stay = stay, oldll = oldll))
 		}
 	}
 
@@ -438,7 +443,7 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 							if (constraints[[h]][i, j] == 1) {
 								change = (betat[,i] < betat[,j])
 								if (sum(change) > 0) {
-									betat[change, j] = betat[change, i]
+									betat[change,j] = betat[change,i]
 									betat[change,] = betat[change,] - rowMeans(betat[change,,drop = FALSE])
 									bad = TRUE
 								}
@@ -470,35 +475,35 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 	}
 
 	rmultireg = function (Y, X, Bbar, A, nu, V) {
-   		n = nrow(Y)
-    		m = ncol(Y)
-	    	k = ncol(X)
-    		RA = chol(A)
-    		W = rbind(X, RA)
-    		Z = rbind(Y, RA %*% Bbar)
-    		IR = backsolve(chol(crossprod(W)), diag(k))
-    		Btilde = crossprod(t(IR)) %*% crossprod(W, Z)
-    		S = crossprod(Z - W %*% Btilde)
-    		rwout = rwishart(nu + n, chol2inv(chol(V + S)))
-    		B = Btilde + IR %*% matrix(rnorm(m * k), ncol = m) %*% t(rwout$CI)
-    
+	  n = nrow(Y)
+	  m = ncol(Y)
+	  k = ncol(X)
+	  RA = chol(A)
+	  W = rbind(X, RA)
+	  Z = rbind(Y, RA %*% Bbar)
+	  IR = backsolve(chol(crossprod(W)), diag(k))
+	  Btilde = crossprod(t(IR)) %*% crossprod(W, Z)
+	  S = crossprod(Z - W %*% Btilde)
+	  rwout = rwishart(nu + n, chol2inv(chol(V + S)))
+	  B = Btilde + IR %*% matrix(rnorm(m * k), ncol = m) %*% t(rwout$CI)
+
 		return(list(B = B, Sigma = rwout$IW))
 	}
 
 	rwishart = function (nu, V) {
-    		m = nrow(V)
-    		df = (nu + nu - m + 1) - (nu - m + 1):nu
-    		if (m > 1) {
-        		T = diag(sqrt(rchisq(c(rep(1, m)), df)))
-        		T[lower.tri(T)] = rnorm((m * (m + 1)/2 - m))
-    		}
-    		else {
-        		T = sqrt(rchisq(1, df))
-    		}
-    		U = chol(V)
-    		C = t(T) %*% U
-    		CI = backsolve(C, diag(m))
-    
+	  m = nrow(V)
+	  df = (nu + nu - m + 1) - (nu - m + 1):nu
+	  if (m > 1) {
+	    T = diag(sqrt(rchisq(c(rep(1, m)), df)))
+	    T[lower.tri(T)] = rnorm((m * (m + 1)/2 - m))
+	    }
+	  else {
+	    T = sqrt(rchisq(1, df))
+	    }
+	  U = chol(V)
+	  C = t(T) %*% U
+	  CI = backsolve(C, diag(m))
+
 		return(list(W = crossprod(C), IW = crossprod(t(CI)), C = C, CI = CI))
 	}
 
@@ -516,7 +521,7 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 		}
 		return(out)
 	}
-	
+
 	fsh = function() {
 		if (Sys.info()[1] == "Windows") { flush.console() }
 		return()
@@ -526,23 +531,23 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 	# OPEN CONNECTION FOR WRITING TO LOG FILE
 	#
 	on.exit(sink())
-	sink("RLog.txt", append = TRUE, type = "output", split = TRUE)
+	sink(paste(directory,'/','RLog.txt', sep = ''), append = TRUE, type = "output", split = TRUE)
 
 	#
 	# PRINT TO CONSOLE AND LOG
 	#
-	if (restart) {
-		cat("Restarting from previous ", fR, "-iteration model estmation...", sep = "", fill = TRUE)
+	if (restart) { cat("Restarting from previous ", fR, "-iteration model estmation...", sep = "", fill = TRUE)
 		cat("", fill = TRUE)
 	}
 	cat("                    Logit Data                    ", fill = TRUE)
 	cat("==================================================", fill = TRUE)
 	cat("Attribute       Type         Levels", fill = TRUE)
-	cat("-----------------------------------", fill = TRUE)    
+	cat("-----------------------------------", fill = TRUE)
 	for (i in 1:natts) {
-		cat(sprintf("%-12s   %-12s   %2i", paste("Attribute", i), 
-			ifelse(xcoding[i] == 0, "Part Worth", "Linear"), nlevels[i]), fill = TRUE)
-	} 
+		cat(sprintf("%-12s   %-12s   %2i", paste("Attribute", i),
+		            ifelse(xcoding[i] == 0, "Part Worth", "Linear"),
+		            nlevels[i]), fill = TRUE)
+	}
 	cat("", fill = TRUE)
 	cat(npar, " parameters to be estimated", ifelse(none, " (including 'None').", "."), sep = "", fill = TRUE)
 	cat("", fill = TRUE)
@@ -554,9 +559,9 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 	cat("Choice  Count   Pct.", fill = TRUE)
 	cat("--------------------", fill = TRUE)
 	for (i in 1:maxalts) {
-		cat(sprintf("%4i    %-6i %s", i, ytab[1,i], paste(ytab[2,i],'%', sep = "")), 
-			fill = TRUE)
-	}	
+		cat(sprintf("%4i    %-6i %s", i, ytab[1,i], paste(ytab[2,i],'%', sep = "")),
+		    fill = TRUE)
+	}
 	cat("", fill = TRUE)
 	cat("      MCMC Inference for Hierarchical Logit       ", fill = TRUE)
 	cat("==================================================", fill = TRUE)
@@ -584,11 +589,11 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 			oldcomp = mgout
 			olddelta = drawDelta(demos, oldbetas, oldcomp, deltabar, Ad)
 		}
-		else {	
+		else {
 			mgout = rGibbs(oldbetas, mubar, Amu, nu, V)
 			oldcomp = mgout
 		}
-		
+
 		if (rep == 1) {
 			if (constrain) {
 				oldll = getLLMnl(oldbetas.c, y, X, info)
@@ -605,7 +610,7 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 		}
 		else {
 			betabar = oldcomp$mu
-		}		
+		}
 
 		if (constrain) {
 			metropout = mnlRwMetropOnce(y, X, oldbetas, oldll, s, inc.root, betabar, rootpi, info, constraints, oldbetas.c)
@@ -654,7 +659,7 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 			else if (acceptr / nunits > 0.3) { s = s * 1.1 }
 		}
 		acceptr = 0
-		 
+
 		#
 		# PREPARE MU VALUES FOR PLOTTING
 		#
@@ -694,14 +699,20 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 				cat("Iteration ", "Acceptance  ", "RLH    ", "Pct. Cert.  ", "Avg. Var.  ", "RMS    ", "Time to End", fill = TRUE)
 			}
 			cat(sprintf("%9.0i  %-5.3f        %-5.3f   %-5.3f        %-5.2f       %-5.2f   %-6s",
-				rep + fR, acceptr.t / (100 * nunits), RLH.a, PctCert.a, AvgVar.a, RMS.a, 
-				paste(timetoend %/% 60, ifelse(round(timetoend %% 60) > 9, ":", ":0"), round(timetoend %% 60), 
-				sep = "")), fill = TRUE)
+			            rep + fR, acceptr.t / (100 * nunits), RLH.a, PctCert.a, AvgVar.a, RMS.a,
+			            paste(timetoend %/% 60, ifelse(round(timetoend %% 60) > 9, ":", ":0"), round(timetoend %% 60),
+			                  sep = "")), fill = TRUE)
 			fsh()
 			acceptr.t = 0
 		}
-		
+
 		if (rep > R - use) {
+		  if (share) {                                           # new code
+		    likeout = likeout + (exp(oldll) ^ (1/(nsets * wgt)))  # new code
+		  }                                                      # new code
+		  else {                                                 # new code
+		    likeout = likeout + (exp(oldll) ^ (1 / nsets))       # new code
+		  }                                                      # new code
 			if (save) {
 				mkeep = (rep - (R - use)) / keep
 				if (rep %% keep == 0) {
@@ -718,27 +729,27 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 			else {
 				betaout = betaout + oldbetas
 			}
-		}		
+		}
 	}
-	
+
 	ctime = proc.time()[3]
 	cat("", fill = TRUE)
-	cat("Total Time Elapsed: ", (ctime - itime) %/% 60, ifelse(round((ctime - itime) %% 60) > 9, ":", ":0"), 
-		round((ctime - itime) %% 60), fill = TRUE, sep = "")
+	cat("Total Time Elapsed: ", (ctime - itime) %/% 60, ifelse(round((ctime - itime) %% 60) > 9, ":", ":0"),
+	    round((ctime - itime) %% 60), fill = TRUE, sep = "")
 	cat("", fill = TRUE)
 
 	#
 	# WRITE RESTART FILE
-	#	
-	write.table(cbind(R + fR, nunits, npar, s, as.numeric(constrain), as.numeric(drawdelta)), "restart.txt", sep = " ", row.names = FALSE, col.names = FALSE)
-	write.table(oldbetas, "restart.txt", sep = " ", row.names = FALSE, col.names = FALSE, append = TRUE)
+	#
+	write.table(cbind(R + fR, nunits, npar, s, as.numeric(constrain), as.numeric(drawdelta)), paste(directory,'/','restart.txt', sep = ''), sep = " ", row.names = FALSE, col.names = FALSE)
+	write.table(oldbetas, paste(directory,'/','restart.txt', sep = ''), row.names = FALSE, col.names = FALSE, append = TRUE)
 	if (constrain) {
-		write.table(oldbetas.c, "restart.txt", sep = " ", row.names = FALSE, col.names = FALSE, append = TRUE)
+		write.table(oldbetas.c, paste(directory,'/','restart.txt', sep = ''), sep = " ", row.names = FALSE, col.names = FALSE, append = TRUE)
 	}
 	if (drawdelta) {
-		write.table(t(olddelta), "restart.txt", sep = " ", row.names = FALSE, col.names = FALSE, append = TRUE)
+		write.table(t(olddelta), paste(directory,'/','restart.txt', sep = ''), sep = " ", row.names = FALSE, col.names = FALSE, append = TRUE)
 	}
-		
+
 	#
 	#
 	# WRITE RESPONDENT BETAS TO CSV FILE
@@ -753,17 +764,29 @@ function(data, xcoding, demos, prior, mcmc, constraints, options) {
 	}
 	if (none) { betanames = c(betanames, "NONE") }
 	cat("Writing estimated unit-level betas to Rbetas.csv in the working directory", fill = TRUE)
-      cat("", fill=TRUE)
-      write.table(betawrite, file = "RBetas.csv", sep = ",", col.names = betanames, row.names = FALSE, qmethod = "double") 			
-	
-	if (save) { 
-		switch(1 + 1 * constrain + 2 * drawdelta,
-			return(list(betadraw = betadraw, compdraw = compdraw, loglike = loglike)),
-			return(list(betadraw = betadraw, betadraw.c = betadraw.c, compdraw = compdraw, loglike = loglike)),
-			return(list(betadraw = betadraw, deltadraw = deltadraw, compdraw = compdraw, loglike = loglike)),
-			return(list(betadraw = betadraw, betadraw.c = betadraw.c, deltadraw = deltadraw, compdraw = compdraw, loglike = loglike))
-		)
-	}
-	else { return(NULL) }		 
-}
+	cat("", fill=TRUE)
+	write.table(betawrite, file = paste(directory,'/','RBetas.csv', sep = ''), sep = ",", col.names = betanames, row.names = FALSE, qmethod = "double")
 
+	#
+	#
+	# WRITE RESPONDENT RLH TO CSV FILE
+	#
+	# new code below
+	likeout = likeout / use
+	cat("Writing RLH, the geometric mean of the likelihood of the choices made,\n
+      across the choice sets of each unit to RLH.csv in the working directory",
+	    fill = TRUE)
+	cat("", fill = TRUE)
+	write.table(cbind(matrix(ID, ncol = 1), likeout), file = paste(directory,'/','RLH.csv', sep = ''), sep = ",",
+	            col.names = c('ID','RLH'),
+	            row.names = FALSE, qmethod = "double")
+	if (save) {
+	  switch(1 + 1 * constrain + 2 * drawdelta,
+	         return(list(betadraw = betadraw, compdraw = compdraw, loglike = loglike, like =  likeout)),
+	         return(list(betadraw = betadraw, betadraw.c = betadraw.c, compdraw = compdraw, loglike = loglike, like =  likeout)),
+	         return(list(betadraw = betadraw, deltadraw = deltadraw, compdraw = compdraw, loglike = loglike, like =  likeout)),
+	         return(list(betadraw = betadraw, betadraw.c = betadraw.c, deltadraw = deltadraw, compdraw = compdraw, loglike = loglike, like =  likeout))
+	  )
+	  }
+	else { return(list(like = likeout)) }
+}

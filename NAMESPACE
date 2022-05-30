@@ -1,1 +1,5 @@
+exportPattern("^[[:alpha:]]+")
 export(choicemodelr)
+importFrom("graphics", "matplot")
+importFrom("stats", "rchisq", "rnorm", "runif")
+importFrom("utils", "flush.console", "write.table")
