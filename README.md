@@ -5,4 +5,4 @@ The dependent variable can be either discrete or a share.  If the dependent vari
 
 The basic structure of the code for this algorithm was derived from the rhierMnlRwMixture program of the bayesm package available at cran.r-project.org.  Significant modifications were made to greatly reduce the run time, to allow constraints on estimated parameters, handle varying number of choice observations, handle varying number of choice alternatives within each choice scenario, and to optionally allow the dependent variable to be a share (between 0 and 1) instead of discrete (1 ,..., nalt; where nalt is the number of alternatives in choice set).
 
-Note: Version 1.3.0 adds one new feature to version 1.2, namely, it saves the RLH values for each unit to the choicemodelr output object and to an RLH.csv file (saved to current working directory).
+Note: In version 1.3.0, an error message occurred when running choicemodelr with options restart=TRUE, demos is used, but no contraints are used. Version 1.3.1 corrects this bug.

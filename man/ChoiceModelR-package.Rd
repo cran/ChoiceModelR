@@ -9,8 +9,8 @@ Estimates coefficients of a Hierarchical Bayes Multinomial Logit Model
 \tabular{ll}{
 Package: \tab ChoiceModelR\cr
 Type: \tab Package\cr
-Version: \tab 1.3.0\cr
-Date: \tab 2022-05-20\cr
+Version: \tab 1.3.1\cr
+Date: \tab 2024-10-08\cr
 License: \tab GPL (>=3)\cr
 LazyLoad: \tab yes\cr
 }
@@ -20,9 +20,8 @@ The dependent variable can be either discrete or a share.  If the dependent vari
 
 The basic structure of the code for this algorithm was derived from the rhierMnlRwMixture program of the bayesm package available at cran.r-project.org.  Significant modifications were made to greatly reduce the run time, to allow constraints on estimated parameters, handle varying number of choice observations, handle varying number of choice alternatives within each choice scenario, and to optionally allow the dependent variable to be a share (between 0 and 1) instead of discrete (1 ,..., nalt; where nalt is the number of alternatives in choice set).
 
-Note: Version 1.3.0 adds two new features to version 1.2:
-(1) Files RBetas.csv, RLog.txt, and restart.txt are saved to a directory specified by the argument, directory, of the choicemodelr function.
-(2) choicemodelr also saves the RLH values for each unit to the choicemodelr output object and to an RLH.csv file (saved to the specified directory).
+Note: Version 1.3.1 fixes a bug in version 1.3.0:
+(1) When restart=TRUE, demos were included and no constraints were included, an error prevented estimation.  This bug was fixed.
 
 }
 \author{

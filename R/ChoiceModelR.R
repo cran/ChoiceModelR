@@ -260,11 +260,16 @@ function(data, xcoding, demos, prior, mcmc, constraints, options, directory) {
 		repeat {
 			if (fCount > items) { break }
 			f.in = scan(paste(directory,'/','restart.txt', sep = ''), nlines = ltr[fCount], skip = fIndex, quiet = TRUE)
-			switch(fCount,
-			       lb <- matrix(f.in, ncol = fPar, byrow = TRUE),
-			       lbc <- matrix(f.in, ncol = fPar, byrow = TRUE),
-			       ld <- c(f.in)
-			       )
+			if (fCons == 0 && fDem == 1) {
+			  switch(fCount,
+			         lb <- matrix(f.in, ncol = fPar, byrow = TRUE),
+			         ld <- c(f.in))
+			} else {
+			  switch(fCount,
+			         lb <- matrix(f.in, ncol = fPar, byrow = TRUE),
+			         lbc <- matrix(f.in, ncol = fPar, byrow = TRUE),
+			         ld <- c(f.in))
+			}
 			fIndex = fIndex + ltr[fCount]
 			fCount = fCount + 1
 		}

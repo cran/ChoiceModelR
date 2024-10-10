@@ -1,6 +1,5 @@
 \name{choicemodelr}
 \alias{choicemodelr}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{Choice Modeling in R}
 \description{
 Estimates coefficients of a Hierarchical Bayes Multinomial Logit Model
@@ -40,7 +39,7 @@ For a share dependent variable, the \dQuote{none} alternative must be explicitly
 
 If the dependent variable is a share, then the dependent variable must have a nonzero value in at least one row for each choice set.\cr
 
-If the dependent variable is a share and there is a "none" alternative, then set none=FALSE in the options list (see options below). Do not specify none=TRUE for share data.\cr
+If the dependent variable is a share and there is a \dQuote{none} alternative, then set none=FALSE in the options list (see options below). Do not specify none=TRUE for share data.\cr
 
 If the dependent variable is a share, the values of the dependent variable need not sum to one as choicemodeler automatically renormalizes the values of the dependent variable to one and then multiplies by wgt (see options below).}
   \item{xcoding}{Required.  A vector that specifies the way in which each attribute will be coded:
@@ -115,7 +114,7 @@ The 1 x 1 matrices for continuous variables are interpreted as follows:
 \item c4[1, 1] = 0,  no constraint}}
   \item{options}{A list with 5 possible arguments:  list(none, save, keep, wgt, restart).
 
-\bold{none}:  set to TRUE to estimate a none parameter, and the data does not include a row for \dQuote{none} (i.e., no choice)  (default is FALSE). If keep>1, the betas (within the choicemodelr output object) will not include those from every iteration of the Markov chain. If keep>1, then the average of the saved betas, for each unit, will not necessarily equal the unit-level betas output to RBetas.csv, since the latter is an average across ALL betas after "burn in", even when keep>1.
+\bold{none}:  set to TRUE to estimate a none parameter, and the data does not include a row for \dQuote{none} (i.e., no choice)  (default is FALSE). If keep>1, the betas (within the choicemodelr output object) will not include those from every iteration of the Markov chain. If keep>1, then the average of the saved betas, for each unit, will not necessarily equal the unit-level betas output to RBetas.csv, since the latter is an average across ALL betas after \dQuote{burn in}, even when keep>1.
 
 \bold{save}:  set to TRUE to save draws of betas, deltas, mu, rooti, and the log likelihood (default is FALSE).
 
@@ -174,7 +173,7 @@ Priors:\cr
 \item{Average Variance}{Average variance of latest estimates of model coefficients across all units (weighted average).}
 \item{RMS}{Root mean squared of latest estimates of model coefficients across all units (weighted average).}
 \item{Graphic Output}{During model estimation, estimates of mu (mean of model coefficients from the distribution of heterogeneity) are plotted in the graphics window.}
-\item{Written to Disk}{At the end of model estimation, the average of MCMC draws of unit-level model coefficients are written to RBetas.csv, and the average of each unit's RLH (the geometric mean of the likelihood of the choices made across the choice sets of the unit) are written to RLH.csv. The estimated coefficients in RBetas.csv (and the RLH's in RLH.csv) are the average across all iterations of the Markov chain, excluding the first R - use "burn in" iterations. A log file, documenting run-time output is written to Rlog.txt. Latest MCMC draws are written to restart.txt. When using estimated coefficients of continuous variables in subsequent simulations, remember that choicemodelr mean centers data for continuous attributes before estimating the coefficient. That is, the mean across all of the unique values of the continuous variable is subtracted from the value found in "data".}
+\item{Written to Disk}{At the end of model estimation, the average of MCMC draws of unit-level model coefficients are written to RBetas.csv, and the average of each unit's RLH (the geometric mean of the likelihood of the choices made across the choice sets of the unit) are written to RLH.csv. The estimated coefficients in RBetas.csv (and the RLH's in RLH.csv) are the average across all iterations of the Markov chain, excluding the first R - use \dQuote{burn in} iterations. A log file, documenting run-time output is written to Rlog.txt. Latest MCMC draws are written to restart.txt. When using estimated coefficients of continuous variables in subsequent simulations, remember that choicemodelr mean centers data for continuous attributes before estimating the coefficient. That is, the mean across all of the unique values of the continuous variable is subtracted from the value found in \dQuote{data}.}
 }
 \references{
 Rossi, Peter; Allenby, Greg M.; and McCulloch, Robert (2005), \emph{Bayesian Statistics and Marketing}, John Wiley and Sons.
